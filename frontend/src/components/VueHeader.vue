@@ -4,17 +4,21 @@
      <div class="container">
        <div class="row">
          <div class="col-sm-4 py-4">
-           <h4 class="text-white">사이트맵</h4>
+           <h4 >사이트맵</h4>
            <ul class="list-unstyled">
             <li>
-                <router-link to="/" class="text-white">메인화면</router-link>
-                <router-link to="/login" class="text-white">메인화면</router-link>
+                <router-link to="/" >메인화면</router-link>
+            </li>
+            <li>
+                <router-link to="/login" v-if="!$store.state.account.id">로그인</router-link>
+                <a to="/login" @click="logout()" v-else>로그아웃</a>
             </li>
            </ul>
          </div>
        </div>
      </div>
    </div>
+
    <div class="navbar navbar-dark bg-dark shadow-sm">
      <div class="container">
        <a href="#" class="navbar-brand d-flex align-items-center">
@@ -30,8 +34,19 @@
 </template>
 
 <script>
+import store from "@/scripts/store";
+import router from "@/scripts/router";
+
 export default {
   name: 'VueHeader',
+  setup(){
+    const logout = () => {
+    store.commit('setAccount',0);
+    sessionStorage.removeItem("id");
+    router.push({path : "/"});
+  }
+  return {logout};
+}
 }
 </script>
 
