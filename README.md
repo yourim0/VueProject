@@ -4,5 +4,5 @@
     - java8
     - springboot2.7.7
     - bootstrap
-    - vue.js
+    - Vue3
     - MariaDB10.2.8
