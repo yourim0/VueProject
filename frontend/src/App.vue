@@ -8,6 +8,9 @@
 import VueHeader from "@/components/VueHeader";
 import VueFooter from "@/components/VueFooter";
 import store from "@/scripts/store";
+import {useRoute} from "vue-router/dist/vue-router";
+import {watch} from "vue";
+import axios from "axios";
 
 export default {
   name: 'App',
@@ -16,10 +19,18 @@ export default {
     VueFooter,
   },
   setup(){
-    const id = sessionStorage.getItem("id");
-    if(id){
-        store.commit("setAccount",id);
-    }
+
+    const check = () =>{
+        axios.get("/api/account/check").then(({data})=>{
+        console.log(data);
+        store.commit("setAccount", data || 0);
+        })
+    };
+
+    const route = useRoute();
+    watch(route,()=>{ //url 경로값이 바뀔 때마다 check 메소드를 실행
+    check();
+    })
   }
 }
 </script>

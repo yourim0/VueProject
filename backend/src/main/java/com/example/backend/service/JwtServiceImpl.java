@@ -1,9 +1,7 @@
 package com.example.backend.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -12,12 +10,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service("jwtService")
 public class JwtServiceImpl implements JwtService{
 
     private String secretKey="abc@asdfggggajdkfls;eirnk456jdklfj!!jdkflsijfkemjl";
 
     @Override
-    public String getTocken(String key, Object value) {
+    public String getToken(String key, Object value) {
 
         Date expTime = new Date();//토큰의 유효한시간
         expTime.setTime(expTime.getTime() + 1000 * 60 * 5); //5분(milliseconds)
@@ -46,9 +45,30 @@ public class JwtServiceImpl implements JwtService{
             try{
                 byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
                 Key signKey = new SecretKeySpec(secretByteKey, SignatureAlgorithm.HS256.getJcaName());
-                Claims claims = Jwts.parserBuilder().setSigningKey();
+                return Jwts.parserBuilder().setSigningKey(signKey).build().parseClaimsJws(token).getBody();
+            }
+            catch(ExpiredJwtException e){
+                //만료됨
+            }
+            catch(JwtException e) {
+                //유효하지 않음
             }
         }
         return null;
+    }
+
+    @Override
+    public Boolean isValid(String token) {
+        return this.getClaims(token) != null;
+
+    }
+
+    @Override
+    public int getId(String token) {
+        Claims claims = this.getClaims(token);
+        if(claims != null){
+            return Integer.parseInt(claims.get("id").toString());
+        }
+        return 0;
     }
 }
