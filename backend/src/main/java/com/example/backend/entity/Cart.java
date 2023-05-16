@@ -19,6 +19,4 @@ public class Cart {
 
     @Column
     private int itemId;
-
-
 }
