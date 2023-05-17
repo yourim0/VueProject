@@ -38,7 +38,8 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        List<Order> orders = orderRepository.findAll();
+        int memberId = jwtService.getId(token);
+        List<Order> orders = orderRepository.findByMemberIdOrderByIdDesc(memberId);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
@@ -65,7 +66,7 @@ public class OrderController {
         newOrder.setItems(dto.getItems());
 
         orderRepository.save(newOrder);
-        cartRepository.deleteByMemberId(memberId);
+        cartRepository.deleteByMemberId(memberId); //주문 완료 후 특정 사용자의 장바구니 지움
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
